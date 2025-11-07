@@ -364,4 +364,8 @@ int main() {
     chatbot.run();
 
     return 0;
+     //======================================================
+    // FUNCTION: displayGoodbyeScreen
+    // Aim: Displays a farewell message when user exits
+    //======================================================
 }
