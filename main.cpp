@@ -242,7 +242,53 @@ public:
         file.close();
         return true;
     }
+//======================================================
+ // FUNCTION: loadHomeLoanData
+ // Aim: Loads home loan details from file and stores them
+ //      into the homeLoanOptions array.
+ //======================================================
+ bool loadHomeLoanData(const string& filename) {
+     ifstream file(filename);
+     if (!file.is_open()) {
+         setColor(LIGHT_RED);
+         cerr << "Error: Could not open " << filename << endl;
+         setColor(WHITE);
+         return false;
+     }
 
+     string line;
+     bool firstLine = true;
+
+     while (getline(file, line)) {
+         if (firstLine) {
+             firstLine = false;
+             continue;
+         }
+
+         if (loanCount >= loanCapacity) {
+             resizeLoanOptions();
+         }
+
+         stringstream ss(line);
+
+         getline(ss, homeLoanOptions[loanCount].area, '#');
+         getline(ss, homeLoanOptions[loanCount].size, '#');
+         getline(ss, homeLoanOptions[loanCount].installments, '#');
+         getline(ss, homeLoanOptions[loanCount].price, '#');
+         getline(ss, homeLoanOptions[loanCount].downPayment, '#');
+
+         homeLoanOptions[loanCount].area = trim(homeLoanOptions[loanCount].area);
+         homeLoanOptions[loanCount].size = trim(homeLoanOptions[loanCount].size);
+         homeLoanOptions[loanCount].installments = trim(homeLoanOptions[loanCount].installments);
+         homeLoanOptions[loanCount].price = trim(homeLoanOptions[loanCount].price);
+         homeLoanOptions[loanCount].downPayment = trim(homeLoanOptions[loanCount].downPayment);
+
+         loanCount++;
+     }
+     file.close();
+     return true;
+ }
+ 
     //======================================================
     // FUNCTION: getResponse
     // Aim: Returns chatbot response for user input by
@@ -258,7 +304,60 @@ public:
         }
         return defaultResponse;
     }   
+//======================================================
+ // FUNCTION: displayHomeLoanOptions
+ // Aim: Displays all home loan options for a specific area.
+ //      Shows a message if no options found.
+ //======================================================
+ void displayHomeLoanOptions(const string& area) {
+     setColor(LIGHT_CYAN);
+     cout << "\n  ========================================================" << endl;
+     setColor(LIGHT_YELLOW);
+     cout << "          Home Loan Options for " << area << endl;
+     setColor(LIGHT_CYAN);
+     cout << "  ========================================================" << endl;
+     setColor(WHITE);
 
+     bool found = false;
+     int optionNum = 1;
+
+     for (int i = 0; i < loanCount; i++) {
+         if (toLower(homeLoanOptions[i].area) == toLower(area)) {
+             found = true;
+             setColor(LIGHT_YELLOW);
+             cout << "\n  Option " << optionNum++ << ":" << endl;
+             setColor(LIGHT_GREEN);
+             cout << "    Area: ";
+             setColor(BRIGHT_WHITE);
+             cout << homeLoanOptions[i].area << endl;
+             setColor(LIGHT_GREEN);
+             cout << "    Size: ";
+             setColor(BRIGHT_WHITE);
+             cout << homeLoanOptions[i].size << endl;
+             setColor(LIGHT_GREEN);
+             cout << "    Installments: ";
+             setColor(BRIGHT_WHITE);
+             cout << homeLoanOptions[i].installments << " months" << endl;
+             setColor(LIGHT_GREEN);
+             cout << "    Price: ";
+             setColor(LIGHT_CYAN);
+             cout << "Rs. " << homeLoanOptions[i].price << endl;
+             setColor(LIGHT_GREEN);
+             cout << "    Down Payment: ";
+             setColor(LIGHT_CYAN);
+             cout << "Rs. " << homeLoanOptions[i].downPayment << endl;
+             setColor(LIGHT_BLUE);
+             cout << "  --------------------------------------------------------" << endl;
+             setColor(WHITE);
+         }
+     }
+
+     if (!found) {
+         setColor(LIGHT_RED);
+         cout << "  No loan options available for " << area << endl;
+         setColor(WHITE);
+     }
+ }
     //======================================================
     // FUNCTION: run
     // Aim: Runs the chatbot application loop.
@@ -314,11 +413,19 @@ public:
                 }
 
 
-                if (input == "1" || input == "2" || input == "3" || input == "4") {
-                    setColor(GREEN); 
-                    cout << "Home Loan Starts here......" << endl; 
-                    setColor(WHITE);
+             
+                if (input == "1") {
+                    displayHomeLoanOptions("Area 1");
                 }
+                else if (input == "2") {
+                    displayHomeLoanOptions("Area 2");
+                }
+                else if (input == "3") {
+                    displayHomeLoanOptions("Area 3");
+                }
+                else if (input == "4") {
+                    displayHomeLoanOptions("Area 4");
+                } 
                   else {
                     setColor(LIGHT_RED);
                     cout << "Invalid area selection. Please try again." << endl;
@@ -352,6 +459,7 @@ public:
 // Aim: Program entry point. Loads data files and runs the
 //      loan application chatbot.
 //======================================================
+
 int main() {
     LoanApplicationSystem chatbot;
 
@@ -360,12 +468,13 @@ int main() {
         return 1;
     }
 
+     if (!chatbot.loadHomeLoanData("Home.txt")) {
+   return 1;
+ }
+
 
     chatbot.run();
 
     return 0;
-     //======================================================
-    // FUNCTION: displayGoodbyeScreen
-    // Aim: Displays a farewell message when user exits
-    //======================================================
+    
 }
