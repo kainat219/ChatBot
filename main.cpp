@@ -340,9 +340,9 @@ public:
              cout << homeLoanOptions[i].installments << " months" << endl;
              setColor(LIGHT_GREEN);
              cout << "    Price: ";
-             setColor(LIGHT_CYAN);
-             cout << "Rs. " << homeLoanOptions[i].price << endl;
              setColor(LIGHT_GREEN);
+             cout << "Rs. " << homeLoanOptions[i].price << endl;
+             setColor(LIGHT_CYAN);
              cout << "    Down Payment: ";
              setColor(LIGHT_CYAN);
              cout << "Rs. " << homeLoanOptions[i].downPayment << endl;
