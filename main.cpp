@@ -1,8 +1,8 @@
-#include<iostream>
+#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
-#include<iomanip>
+#include <iomanip>
 #include <windows.h>
 
 using namespace std;
@@ -121,13 +121,13 @@ private:
     return true;
 }
 
-//======================================================
-// FUNCTION: stringToDouble
-// Aim: Converts string to double, removing commas
-//======================================================
-double stringToDouble(const string& str) {
-    string numStr = "";
-    for (size_t i = 0; i < str.length(); i++) {
+    //======================================================
+    // FUNCTION: stringToDouble
+    // Aim: Converts string to double, removing commas
+    //======================================================
+     double stringToDouble(const string& str) {
+     string numStr = "";
+     for (size_t i = 0; i < str.length(); i++) {
         if (str[i] != ',') {
             numStr += str[i];
         }
@@ -135,19 +135,19 @@ double stringToDouble(const string& str) {
     return atof(numStr.c_str());
 }
 
-//======================================================
-// FUNCTION: stringToInt
-// Aim: Converts string to integer
-//======================================================
-int stringToInt(const string& str) {
+    //======================================================
+    // FUNCTION: stringToInt
+    // Aim: Converts string to integer
+    //======================================================
+    int stringToInt(const string& str) {
     return atoi(str.c_str());
 }
 
-//======================================================
-// FUNCTION: formatNumber
-// Aim: Formats number with commas for better readability
-//======================================================
-string formatNumber(double num) {
+    //======================================================
+    // FUNCTION: formatNumber
+    // Aim: Formats number with commas for better readability
+    //======================================================
+    string formatNumber(double num) {
     stringstream ss;
     ss << fixed << setprecision(2) << num;
     string result = ss.str();
@@ -170,20 +170,20 @@ string formatNumber(double num) {
     return result;
 }
 
- //======================================================
- // FUNCTION: calculateMonthlyInstallment
- // Aim: Calculates monthly installment amount
- //      Formula: (Price - Down Payment) / Number of Installments
- //======================================================
- double calculateMonthlyInstallment(double price, double downPayment, int installments) {
-     return (price - downPayment) / installments;
- }
+    //======================================================
+    // FUNCTION: calculateMonthlyInstallment
+    // Aim: Calculates monthly installment amount
+    //      Formula: (Price - Down Payment) / Number of Installments
+    //======================================================
+    double calculateMonthlyInstallment(double price, double downPayment, int installments) {
+    return (price - downPayment) / installments;
+}
 
- //======================================================
- // FUNCTION: resizeUtterances
- // Aim: Expands the utterances array size dynamically
- //      when capacity is reached.
- //======================================================
+    //======================================================
+    // FUNCTION: resizeUtterances
+    // Aim: Expands the utterances array size dynamically
+    //      when capacity is reached.
+    //======================================================
     void resizeUtterances() {
         utteranceCapacity *= 2;
         Utterance* newUtterances = new Utterance[utteranceCapacity];
@@ -194,16 +194,16 @@ string formatNumber(double num) {
         utterances = newUtterances;
     }
 
-   //======================================================
-   // FUNCTION: resizeLoanArray
-  // Aim: Generic function to resize loan option arrays
-  //======================================================
+    //======================================================
+    // FUNCTION: resizeLoanArray
+    // Aim: Generic function to resize loan option arrays
+    //======================================================
     void resizeLoanArray(LoanOption*& array, int& capacity) {
      capacity *= 2;
      LoanOption* newArray = new LoanOption[capacity];
      for (int i = 0; i < capacity / 2; i++) {
          newArray[i] = array[i];
-     }
+        }
      delete[] array;
      array = newArray;
  
@@ -260,7 +260,7 @@ string formatNumber(double num) {
     // FUNCTION: generateInstallmentPlan
     // Aim: Generates and displays complete installment plan
     //======================================================
-void generateInstallmentPlan(const LoanOption& loan, const string& loanType, int userInstallments) {
+    void generateInstallmentPlan(const LoanOption& loan, const string& loanType, int userInstallments) {
     double price = stringToDouble(loan.price);
     double downPayment = stringToDouble(loan.downPayment);
     int installments = userInstallments;
@@ -383,11 +383,11 @@ void generateInstallmentPlan(const LoanOption& loan, const string& loanType, int
         }
     }
 
-//======================================================
-// FUNCTION: displayLoanOptions
-// Aim: Displays all loan options for specific type and category
-//======================================================
-int displayLoanOptions(LoanOption* options, int count, const string& category, const string& loanType) {
+    //======================================================
+    // FUNCTION: displayLoanOptions
+    // Aim: Displays all loan options for specific type and category
+    //======================================================
+    int displayLoanOptions(LoanOption* options, int count, const string& category, const string& loanType) {
     setColor(LIGHT_CYAN);
     cout << "\n  ========================================================" << endl;
     setColor(LIGHT_YELLOW);
@@ -441,11 +441,11 @@ int displayLoanOptions(LoanOption* options, int count, const string& category, c
     return optionNum;
 }
 
-//======================================================
-// FUNCTION: selectAndShowInstallmentPlan
-// Aim: Allows user to select option, choose installments, and view plan
-//======================================================
-void selectAndShowInstallmentPlan(LoanOption* options, int count, const string& category, const string& loanType, int displayedCount) {
+    //======================================================
+    // FUNCTION: selectAndShowInstallmentPlan
+    // Aim: Allows user to select option, choose installments, and view plan
+    //======================================================
+    void selectAndShowInstallmentPlan(LoanOption* options, int count, const string& category, const string& loanType, int displayedCount) {
     if (displayedCount == 0) {
         return;
     }
@@ -486,7 +486,6 @@ void selectAndShowInstallmentPlan(LoanOption* options, int count, const string& 
     cout << "\n  Suggested installment plans for this loan:" << endl;
     setColor(WHITE);
 
-    // Show suggested plan from file
     int suggestedInstallments = stringToInt(selectedLoan.installments);
     double suggestedMonthly = calculateMonthlyInstallment(price, downPayment, suggestedInstallments);
 
@@ -553,11 +552,11 @@ void selectAndShowInstallmentPlan(LoanOption* options, int count, const string& 
     }
 }
 
-//======================================================
-// FUNCTION: handleLoanSelection
-// Aim: Generic function to handle loan selection for any type
-//======================================================
-void handleLoanSelection(LoanOption* options, int count, const string& loanType) {
+    //======================================================
+    // FUNCTION: handleLoanSelection
+    // Aim: Generic function to handle loan selection for any type
+    //======================================================
+    void handleLoanSelection(LoanOption* options, int count, const string& loanType) {
     // Get unique categories
     string categories[100];
     int categoryCount = 0;
@@ -601,10 +600,10 @@ void handleLoanSelection(LoanOption* options, int count, const string& loanType)
 }
 public:
     //======================================================
-// CONSTRUCTOR: LoanApplicationSystem
-// Aim: Initializes data members and allocates memory
-//======================================================
-LoanApplicationSystem() {
+    // CONSTRUCTOR: LoanApplicationSystem
+    // Aim: Initializes data members and allocates memory
+    //======================================================
+    LoanApplicationSystem() {
     utteranceCapacity = 10;
     utteranceCount = 0;
     utterances = new Utterance[utteranceCapacity];
@@ -625,16 +624,16 @@ LoanApplicationSystem() {
     chatbotName = "LOAN-BUDDY";
 }
 
-   //======================================================
- // DESTRUCTOR: ~LoanApplicationSystem
- // Aim: Frees dynamically allocated memory
- //======================================================
- ~LoanApplicationSystem() {
-     delete[] utterances;
-     delete[] homeLoanOptions;
-     delete[] carLoanOptions;
-     delete[] bikeLoanOptions;
- }
+    //======================================================
+    // DESTRUCTOR: ~LoanApplicationSystem
+    // Aim: Frees dynamically allocated memory
+    //======================================================
+    ~LoanApplicationSystem() {
+    delete[] utterances;
+    delete[] homeLoanOptions;
+    delete[] carLoanOptions;
+    delete[] bikeLoanOptions;
+}
 
     //======================================================
     // FUNCTION: loadUtterances
@@ -673,11 +672,11 @@ LoanApplicationSystem() {
         file.close();
         return true;
     }
-//======================================================
-// FUNCTION: loadLoanData
-// Aim: Generic function to load loan data from file
-//======================================================
-bool loadLoanData(const string& filename, LoanOption*& options, int& count, int& capacity) {
+    //======================================================
+    // FUNCTION: loadLoanData
+    // Aim: Generic function to load loan data from file
+    //======================================================
+    bool loadLoanData(const string& filename, LoanOption*& options, int& count, int& capacity) {
     ifstream file(filename);
     if (!file.is_open()) {
         setColor(LIGHT_RED);
@@ -721,27 +720,27 @@ bool loadLoanData(const string& filename, LoanOption*& options, int& count, int&
     file.close();
     return true;
 }
- //======================================================
-// FUNCTION: loadHomeLoanData
-// Aim: Loads home loan data from file
-//======================================================
-bool loadHomeLoanData(const string& filename) {
+    //======================================================
+    // FUNCTION: loadHomeLoanData
+    // Aim: Loads home loan data from file
+    //======================================================
+    bool loadHomeLoanData(const string& filename) {
     return loadLoanData(filename, homeLoanOptions, homeCount, homeCapacity);
 }
 
-//======================================================
-// FUNCTION: loadCarLoanData
-// Aim: Loads car loan data from file
-//======================================================
-bool loadCarLoanData(const string& filename) {
+    //======================================================
+    // FUNCTION: loadCarLoanData
+    // Aim: Loads car loan data from file
+    //======================================================
+    bool loadCarLoanData(const string& filename) {
     return loadLoanData(filename, carLoanOptions, carCount, carCapacity);
 }
 
-//======================================================
-// FUNCTION: loadBikeLoanData
-// Aim: Loads electric bike loan data from file
-//======================================================
-bool loadBikeLoanData(const string& filename) {
+    //======================================================
+    // FUNCTION: loadBikeLoanData
+    // Aim: Loads electric bike loan data from file
+    //======================================================
+    bool loadBikeLoanData(const string& filename) {
     return loadLoanData(filename, bikeLoanOptions, bikeCount, bikeCapacity);
 }
     //======================================================
@@ -795,11 +794,11 @@ bool loadBikeLoanData(const string& filename) {
             }
             string response = getResponse(input);
 
- setColor(LIGHT_CYAN);
- cout << "\n" << chatbotName << ": ";
- setColor(LIGHT_GREEN);
- cout << response << endl;
- setColor(WHITE);
+            setColor(LIGHT_CYAN);
+            cout << "\n" << chatbotName << ": ";
+            setColor(LIGHT_GREEN);
+            cout << response << endl;
+            setColor(WHITE);
 
            // Handle loan type selection
         if (lowerInput == "h") {
@@ -858,31 +857,32 @@ bool loadBikeLoanData(const string& filename) {
         }
     }
 }
+
 };
 
-//======================================================
-// FUNCTION: main
-// Aim: Program entry point. Loads data files and runs the
-//      loan application chatbot.
-//======================================================
+    //======================================================
+    // FUNCTION: main
+    // Aim: Program entry point. Loads data files and runs the
+    //      loan application chatbot.
+    //======================================================
 
-int main() {
+    int main() {
     LoanApplicationSystem chatbot ; 
    
- if (!chatbot.loadUtterances("Utterances.txt")) {
+    if (!chatbot.loadUtterances("Utterances.txt")) {
      setColor(LIGHT_RED);
      cout << "\nPress any key to exit...";
      setColor(WHITE);
      cin.get();
      return 1;
- }
+    }
 
  
- chatbot.loadHomeLoanData("Home.txt");
- chatbot.loadCarLoanData("Car.txt");
- chatbot.loadBikeLoanData("Bike.txt");
+    chatbot.loadHomeLoanData("Home.txt");
+    chatbot.loadCarLoanData("Car.txt");
+    chatbot.loadBikeLoanData("Bike.txt");
 
  
- chatbot.run();
- return 0;
+    chatbot.run();
+    return 0;
 }
