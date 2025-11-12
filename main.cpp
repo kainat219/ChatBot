@@ -50,8 +50,8 @@ struct Utterance {
 // Purpose: Stores information about a specific home loan option
 //======================================================
 struct LoanOption {
-    string area;
-    string size;
+    string category;
+    string details;
     string installments;
     string price;
     string downPayment;
@@ -68,8 +68,16 @@ private:
     int utteranceCapacity;
 
     LoanOption* homeLoanOptions;
-    int loanCount;
-    int loanCapacity;
+    int homeCount;
+    int homeCapacity;
+
+    LoanOption* carLoanOptions;
+    int carCount;
+    int carCapacity;
+
+    LoanOption* bikeLoanOptions;
+    int bikeCount;
+    int bikeCapacity;
 
     string defaultResponse;
     string chatbotName;
@@ -99,8 +107,70 @@ private:
         }
         return str;
     }
-
     //======================================================
+    // FUNCTION: isValidNumber
+    // Aim: Checks if string contains only digits
+    //======================================================
+    bool isValidNumber(const string& str) {
+    if (str.empty()) return false;
+    for (size_t i = 0; i < str.length(); i++) {
+        if (str[i] < '0' || str[i] > '9') {
+            return false;
+        }
+    }
+    return true;
+}
+
+//======================================================
+// FUNCTION: stringToDouble
+// Aim: Converts string to double, removing commas
+//======================================================
+double stringToDouble(const string& str) {
+    string numStr = "";
+    for (size_t i = 0; i < str.length(); i++) {
+        if (str[i] != ',') {
+            numStr += str[i];
+        }
+    }
+    return atof(numStr.c_str());
+}
+
+//======================================================
+// FUNCTION: stringToInt
+// Aim: Converts string to integer
+//======================================================
+int stringToInt(const string& str) {
+    return atoi(str.c_str());
+}
+
+//======================================================
+// FUNCTION: formatNumber
+// Aim: Formats number with commas for better readability
+//======================================================
+string formatNumber(double num) {
+    stringstream ss;
+    ss << fixed << setprecision(2) << num;
+    string result = ss.str();
+
+    if (result.substr(result.length() - 3) == ".00") {
+        result = result.substr(0, result.length() - 3);
+    }
+
+    int insertPos = result.find('.');
+    if (insertPos == string::npos) {
+        insertPos = result.length();
+    }
+    insertPos -= 3;
+
+    while (insertPos > 0) {
+        result.insert(insertPos, ",");
+        insertPos -= 3;
+    }
+
+    return result;
+}
+
+ //======================================================
  // FUNCTION: calculateMonthlyInstallment
  // Aim: Calculates monthly installment amount
  //      Formula: (Price - Down Payment) / Number of Installments
@@ -109,11 +179,11 @@ private:
      return (price - downPayment) / installments;
  }
 
-    //======================================================
-    // FUNCTION: resizeUtterances
-    // Aim: Expands the utterances array size dynamically
-    //      when capacity is reached.
-    //======================================================
+ //======================================================
+ // FUNCTION: resizeUtterances
+ // Aim: Expands the utterances array size dynamically
+ //      when capacity is reached.
+ //======================================================
     void resizeUtterances() {
         utteranceCapacity *= 2;
         Utterance* newUtterances = new Utterance[utteranceCapacity];
@@ -124,11 +194,11 @@ private:
         utterances = newUtterances;
     }
 
-    //======================================================
- // FUNCTION: resizeLoanArray
- // Aim: Generic function to resize loan option arrays
- //======================================================
- void resizeLoanArray(LoanOption*& array, int& capacity) {
+   //======================================================
+   // FUNCTION: resizeLoanArray
+  // Aim: Generic function to resize loan option arrays
+  //======================================================
+    void resizeLoanArray(LoanOption*& array, int& capacity) {
      capacity *= 2;
      LoanOption* newArray = new LoanOption[capacity];
      for (int i = 0; i < capacity / 2; i++) {
@@ -187,9 +257,9 @@ private:
     }
 
     //======================================================
-// FUNCTION: generateInstallmentPlan
-// Aim: Generates and displays complete installment plan
-//======================================================
+    // FUNCTION: generateInstallmentPlan
+    // Aim: Generates and displays complete installment plan
+    //======================================================
 void generateInstallmentPlan(const LoanOption& loan, const string& loanType, int userInstallments) {
     double price = stringToDouble(loan.price);
     double downPayment = stringToDouble(loan.downPayment);
@@ -249,6 +319,69 @@ void generateInstallmentPlan(const LoanOption& loan, const string& loanType, int
     cout << "\n  Total Amount Paid: Rs. " << formatNumber(price) << endl;
     setColor(WHITE);
 }
+
+    //======================================================
+    // FUNCTION: getValidInput
+    // Aim: Gets valid input from user with custom validation
+    //======================================================
+    string getValidInput(const string& prompt, bool allowX = true) {
+        string input;
+        while (true) {
+            setColor(LIGHT_YELLOW);
+            cout << prompt;
+            setColor(BRIGHT_WHITE);
+            getline(cin, input);
+            input = trim(input);
+
+            if (input.empty()) {
+                setColor(LIGHT_RED);
+                cout << "Input cannot be empty. Please try again." << endl;
+                continue;
+            }
+
+            if (allowX && toLower(input) == "x") {
+                return "x";
+            }
+
+            return input;
+        }
+    }
+
+    //======================================================
+    // FUNCTION: getValidNumberInput
+    // Aim: Gets valid numeric input from user
+    //======================================================
+    int getValidNumberInput(const string& prompt, int min, int max) {
+        string input;
+        while (true) {
+            setColor(LIGHT_MAGENTA);
+            cout << prompt;
+            setColor(BRIGHT_WHITE);
+            getline(cin, input);
+            input = trim(input);
+
+            if (input.empty()) {
+                setColor(LIGHT_RED);
+                cout << "  Input cannot be empty. Please try again." << endl;
+                continue;
+            }
+
+            if (!isValidNumber(input)) {
+                setColor(LIGHT_RED);
+                cout << "  Invalid input! Please enter a number between " << min << " and " << max << "." << endl;
+                continue;
+            }
+
+            int value = stringToInt(input);
+            if (value < min || value > max) {
+                setColor(LIGHT_RED);
+                cout << "  Invalid option! Please enter a number between " << min << " and " << max << "." << endl;
+                continue;
+            }
+
+            return value;
+        }
+    }
 
 //======================================================
 // FUNCTION: displayLoanOptions
@@ -660,7 +793,7 @@ bool loadBikeLoanData(const string& filename) {
                 running = false;
                 continue;
             }
-string response = getResponse(input);
+            string response = getResponse(input);
 
  setColor(LIGHT_CYAN);
  cout << "\n" << chatbotName << ": ";
@@ -720,7 +853,7 @@ string response = getResponse(input);
             }
         }
         else if (lowerInput == "a") {
-            // About option - just show response, continue conversation
+           
             continue;
         }
     }
@@ -734,7 +867,8 @@ string response = getResponse(input);
 //======================================================
 
 int main() {
-    // Load utterances file
+    LoanApplicationSystem chatbot ; 
+   
  if (!chatbot.loadUtterances("Utterances.txt")) {
      setColor(LIGHT_RED);
      cout << "\nPress any key to exit...";
@@ -743,12 +877,12 @@ int main() {
      return 1;
  }
 
- // Load loan data files
+ 
  chatbot.loadHomeLoanData("Home.txt");
  chatbot.loadCarLoanData("Car.txt");
  chatbot.loadBikeLoanData("Bike.txt");
 
- // Run the chatbot system
+ 
  chatbot.run();
  return 0;
 }
