@@ -28,12 +28,6 @@ using namespace std;
 #define LIGHT_YELLOW 14
 #define BRIGHT_WHITE 15
 
-//======================================================
-// FUNCTION: setColor
-// Aim: Sets console text color using Windows API
-//======================================================
-
-
 void setColor(int color) {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTextAttribute(hConsole, color);
@@ -90,11 +84,6 @@ string doubleToString(double num) {
     if (isNegative) result = "-" + result;
     return result;
 }
-//======================================================
-    // FUNCTION: trim
-    // Aim: Removes whitespace (spaces, tabs, newlines) from
-    //      the beginning and end of a string.
-    //======================================================
 
 string trim(const string& str) {
     size_t first = str.find_first_not_of(" \t\r\n");
@@ -102,12 +91,6 @@ string trim(const string& str) {
     size_t last = str.find_last_not_of(" \t\r\n");
     return str.substr(first, last - first + 1);
 }
-
-//======================================================
-// FUNCTION: toLower
-// Aim: Converts all uppercase characters in a string
-//      to lowercase for case-insensitive comparison.
-//======================================================
 
 string toLower(string str) {
     for (size_t i = 0; i < str.length(); i++) {
@@ -125,6 +108,16 @@ string toUpper(string str) {
         }
     }
     return str;
+}
+
+string removeCommas(const string& str) {
+    string result = "";
+    for (size_t i = 0; i < str.length(); i++) {
+        if (str[i] != ',') {
+            result += str[i];
+        }
+    }
+    return result;
 }
 
 //======================================================
@@ -176,7 +169,7 @@ struct UserApplication {
     string cnicBackPath;
     string electricityBillPath;
     string salarySlipPath;
-    string status; // Pending, Approved, Rejected
+    string status;
     string selectedLoanType;
     string selectedLoanCategory;
     double loanAmount;
@@ -191,15 +184,31 @@ struct LoanOption {
     string downPayment;
 };
 
+struct CarLoanOption {
+    string make;
+    string model;
+    string engine;
+    string used;
+    string year;
+    string installments;
+    string price;
+    string downPayment;
+};
+
+struct BikeLoanOption {
+    string make;
+    string model;
+    string engine;
+    string used;
+    string year;
+    string installments;
+    string price;
+    string downPayment;
+};
+
 //======================================================
 // VALIDATION FUNCTIONS
 //======================================================
-
-
- //======================================================
-    // FUNCTION: isValidNumber
-    // Aim: Checks if string contains only digits
-    //======================================================
 bool isValidNumber(const string& str) {
     if (str.empty()) return false;
     for (size_t i = 0; i < str.length(); i++) {
@@ -209,24 +218,6 @@ bool isValidNumber(const string& str) {
     }
     return true;
 }
-//======================================================
-    // FUNCTION: isValidAmount
-    // Aim: Validates monetary amount (positive number)
-    //======================================================
-//bool isValidAmount(const string& amount) {
-//    if (amount.empty()) return false;
-//    bool hasDecimal = false;
-//    for (size_t i = 0; i < amount.length(); i++) {
-//        if (amount[i] == '.' || amount[i] == ',') {
-//            if (hasDecimal) return false;
-//            hasDecimal = true;
-//        }
-//        else if (amount[i] < '0' || amount[i] > '9') {
-//            return false;
-//        }
-//    }
-//    return stringToDouble(amount) > 0;
-//}
 
 bool isValidAmount(const string& amount) {
     if (amount.empty()) return false;
@@ -236,17 +227,10 @@ bool isValidAmount(const string& amount) {
     return true;
 }
 
-
-//======================================================
-// FUNCTION: getEmailValidationError
-// Aim: Validates email address format and returns reason if invalid
-//======================================================
 string isValidEmail(const string& email) {
-    // Basic length check
     if (email.length() < 5 || email.length() > 254)
         return "Email must be between 5 and 254 characters.";
 
-    // Check for @ symbol
     size_t atPos = email.find('@');
     if (atPos == string::npos)
         return "Email must contain '@' symbol.";
@@ -255,7 +239,6 @@ string isValidEmail(const string& email) {
     if (atPos == email.length() - 1)
         return "Email cannot end with '@'.";
 
-    // Check for dot after @
     size_t dotPos = email.find('.', atPos);
     if (dotPos == string::npos)
         return "Email domain must contain a dot ('.') after '@'.";
@@ -264,7 +247,6 @@ string isValidEmail(const string& email) {
     if (dotPos == email.length() - 1)
         return "Email cannot end with a dot.";
 
-    // Check local part (before @)
     string localPart = email.substr(0, atPos);
     if (localPart.empty())
         return "Email local part (before '@') cannot be empty.";
@@ -275,7 +257,6 @@ string isValidEmail(const string& email) {
         }
     }
 
-    // Check domain part (after @)
     string domainPart = email.substr(atPos + 1);
     if (domainPart.empty())
         return "Email domain part (after '@') cannot be empty.";
@@ -286,26 +267,17 @@ string isValidEmail(const string& email) {
         }
     }
 
-    // Check for consecutive dots
     if (email.find("..") != string::npos)
         return "Email cannot contain consecutive dots ('..').";
 
-    return ""; // valid email
+    return "";
 }
 
-
-
-//======================================================
-   // FUNCTION: isValidCNIC
-   // Aim: Validates CNIC format (13 digits, no dashes or other characters)
-   //======================================================
 bool isValidCNIC(const string& cnic) {
-    // First check: must be exactly 13 characters
     if (cnic.length() != 13) {
         return false;
     }
 
-    // Second check: all characters must be digits
     for (size_t i = 0; i < cnic.length(); i++) {
         if (cnic[i] < '0' || cnic[i] > '9') {
             return false;
@@ -315,10 +287,6 @@ bool isValidCNIC(const string& cnic) {
     return true;
 }
 
-//======================================================
-// FUNCTION: isValidPhone
-// Aim: Validates phone number (10-11 digits)
-//======================================================
 bool isValidPhone(const string& phone) {
     string cleanPhone = "";
     for (size_t i = 0; i < phone.length(); i++) {
@@ -328,46 +296,34 @@ bool isValidPhone(const string& phone) {
     }
     return cleanPhone.length() >= 10 && cleanPhone.length() <= 11;
 }
-//======================================================
-    // FUNCTION: getCNICExpiryValidationError
-    // Aim: Validates CNIC expiry date format (DD-MM-YYYY) and returns reason if invalid
-    //======================================================
+
 string getCNICExpiryValidationError(const string& expiryDate) {
-    // Check length
     if (expiryDate.length() != 10)
         return "Expiry date must be in DD-MM-YYYY format (10 characters).";
 
-    // Check dashes at correct positions
     if (expiryDate[2] != '-' || expiryDate[5] != '-')
         return "Expiry date must have dashes at positions 3 and 6 (DD-MM-YYYY).";
 
-    // Extract day, month, year parts
     string dayStr = expiryDate.substr(0, 2);
     string monthStr = expiryDate.substr(3, 2);
     string yearStr = expiryDate.substr(6, 4);
 
-    // Check if all parts are digits
     for (char c : dayStr) if (!isdigit(c)) return "Day must contain only digits.";
     for (char c : monthStr) if (!isdigit(c)) return "Month must contain only digits.";
     for (char c : yearStr) if (!isdigit(c)) return "Year must contain only digits.";
 
-    // Convert to integers
     int day = stoi(dayStr);
     int month = stoi(monthStr);
     int year = stoi(yearStr);
 
-    // Validate year range
     if (year < 2020 || year > 2050)
         return "Year must be between 2020 and 2050.";
 
-    // Validate month
     if (month < 1 || month > 12)
         return "Month must be between 01 and 12.";
 
-    // Validate day based on month
     int daysInMonth;
     if (month == 2) {
-        // February - check leap year
         bool isLeap = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
         daysInMonth = isLeap ? 29 : 28;
     }
@@ -381,20 +337,13 @@ string getCNICExpiryValidationError(const string& expiryDate) {
     if (day < 1 || day > daysInMonth)
         return "Invalid day for the given month.";
 
-    return ""; // valid expiry date
+    return "";
 }
 
-//======================================================
-    // FUNCTION: stringToInt
-    // Aim: Converts string to integer
-    //======================================================
 int stringToInt(const string& str) {
     return atoi(str.c_str());
 }
-//======================================================
-    // FUNCTION: getCNICIssueValidationError
-    // Aim: Validates CNIC issue date format (DD-MM-YYYY) and returns reason if invalid
-    //======================================================
+
 string getCNICIssueValidationError(const string& date) {
     if (date.length() != 10) return "Date must be in DD-MM-YYYY format.";
     if (date[2] != '-' || date[5] != '-') return "Dashes must be at correct positions (DD-MM-YYYY).";
@@ -411,7 +360,6 @@ string getCNICIssueValidationError(const string& date) {
     int month = stringToInt(monthStr);
     int year = stringToInt(yearStr);
 
-    // Issue date range: past to current year
     if (year < 1950 || year > 2025) return "Year must be between 1950 and 2025.";
 
     int daysInMonth;
@@ -431,32 +379,8 @@ string getCNICIssueValidationError(const string& date) {
 
     if (day < 1 || day > daysInMonth) return "Day is invalid for the given month.";
 
-    return ""; // no error
+    return "";
 }
-
-//bool isValidDate(const string& date, const string& format) {
-//    if (format == "DD-MM-YYYY") {
-//        if (date.length() != 10) return false;
-//        if (date[2] != '-' || date[5] != '-') return false;
-//
-//        string dayStr = date.substr(0, 2);
-//        string monthStr = date.substr(3, 2);
-//        string yearStr = date.substr(6, 4);
-//
-//        if (!isValidNumber(dayStr) || !isValidNumber(monthStr) || !isValidNumber(yearStr))
-//            return false;
-//
-//        int day = atoi(dayStr.c_str());
-//        int month = atoi(monthStr.c_str());
-//        int year = atoi(yearStr.c_str());
-//
-//        if (day < 1 || day > 31 || month < 1 || month > 12 || year < 1900 || year > 2100)
-//            return false;
-//
-//        return true;
-//    }
-//    return false;
-//}
 
 string capitalizeName(const string& name) {
     string result = "";
@@ -491,7 +415,6 @@ string capitalizeName(const string& name) {
 bool isValidFullName(const string& name) {
     if (name.empty()) return false;
 
-    // Check if name has at least 2 words
     int wordCount = 0;
     bool inWord = false;
 
@@ -513,10 +436,7 @@ bool isValidFullName(const string& name) {
 
     return wordCount >= 2;
 }
-//======================================================
-    // FUNCTION: isValidPostalAddress
-    // Aim: Validates postal address format and returns reason if invalid
-    //======================================================
+
 string isValidAddress(const string& address) {
     if (address.length() < 10 || address.length() > 200)
         return "Postal address must be between 10 and 200 characters.";
@@ -542,23 +462,8 @@ string isValidAddress(const string& address) {
     if (address[0] == ' ' || address[address.length() - 1] == ' ')
         return "Postal address cannot start or end with a space.";
 
-    return ""; // valid address
+    return "";
 }
-
-
-//bool isValidAddress(const string& address) {
-//    if (address.length() < 10) return false;
-//
-//    bool hasNumber = false;
-//    bool hasLetter = false;
-//
-//    for (size_t i = 0; i < address.length(); i++) {
-//        if (address[i] >= '0' && address[i] <= '9') hasNumber = true;
-//        if ((address[i] >= 'a' && address[i] <= 'z') || (address[i] >= 'A' && address[i] <= 'Z')) hasLetter = true;
-//    }
-//
-//    return hasNumber && hasLetter;
-//}
 
 string generateApplicationId() {
     static int counter = 1000;
@@ -586,11 +491,11 @@ private:
     int homeCount;
     int homeCapacity;
 
-    LoanOption* carLoanOptions;
+    CarLoanOption* carLoanOptions;
     int carCount;
     int carCapacity;
 
-    LoanOption* bikeLoanOptions;
+    BikeLoanOption* bikeLoanOptions;
     int bikeCount;
     int bikeCapacity;
 
@@ -650,6 +555,26 @@ private:
     void resizeLoanArray(LoanOption*& array, int& capacity) {
         capacity *= 2;
         LoanOption* newArray = new LoanOption[capacity];
+        for (int i = 0; i < capacity / 2; i++) {
+            newArray[i] = array[i];
+        }
+        delete[] array;
+        array = newArray;
+    }
+
+    void resizeCarLoanArray(CarLoanOption*& array, int& capacity) {
+        capacity *= 2;
+        CarLoanOption* newArray = new CarLoanOption[capacity];
+        for (int i = 0; i < capacity / 2; i++) {
+            newArray[i] = array[i];
+        }
+        delete[] array;
+        array = newArray;
+    }
+
+    void resizeBikeLoanArray(BikeLoanOption*& array, int& capacity) {
+        capacity *= 2;
+        BikeLoanOption* newArray = new BikeLoanOption[capacity];
         for (int i = 0; i < capacity / 2; i++) {
             newArray[i] = array[i];
         }
@@ -767,13 +692,11 @@ private:
         cout << "\n  Please provide accurate information." << endl;
         cout << "  (Type 'X' at any time to cancel)" << endl;
 
-        // Generate Application ID
         currentApp.applicationId = generateApplicationId();
         setColor(LIGHT_GREEN);
         cout << "\n  Your Application ID: " << currentApp.applicationId << endl;
         setColor(WHITE);
 
-        // Full Name
         while (true) {
             string name = getValidInput("\n  Enter your full name (First Last): ");
             if (name == "x") return false;
@@ -787,7 +710,6 @@ private:
             break;
         }
 
-        // Father's Name
         while (true) {
             string fatherName = getValidInput("  Enter your father's name (First Last): ");
             if (fatherName == "x") return false;
@@ -801,8 +723,6 @@ private:
             break;
         }
 
-
-        // Postal Address
         while (true) {
             string postalAddress = getValidInput("\n  Enter your Postal Address: ");
             if (postalAddress == "x") return false;
@@ -819,7 +739,6 @@ private:
             break;
         }
 
-        // Contact Number
         while (true) {
             string phone = getValidInput("  Enter your contact number (03XXXXXXXXX): ");
             if (phone == "x") return false;
@@ -833,7 +752,6 @@ private:
             break;
         }
 
-        // Email
         while (true) {
             string email = getValidInput("\n  Enter your Email Address: ");
             if (email == "x") return false;
@@ -850,8 +768,6 @@ private:
             break;
         }
 
-
-        // CNIC (without dashes)
         while (true) {
             string cnic = getValidInput("  Enter your CNIC (13 digits, no dashes): ");
             if (cnic == "x") return false;
@@ -865,7 +781,6 @@ private:
             break;
         }
 
-        // CNIC Expiry Date
         while (true) {
             string expiryDate = getValidInput("\n  Enter CNIC Expiry Date (DD-MM-YYYY): ");
             if (expiryDate == "x") return false;
@@ -882,7 +797,6 @@ private:
             break;
         }
 
-        // Employment Status
         setColor(LIGHT_YELLOW);
         cout << "\n  Select employment status:" << endl;
         setColor(WHITE);
@@ -896,7 +810,6 @@ private:
         else if (emp == 3) currentApp.employmentStatus = "Retired";
         else currentApp.employmentStatus = "Unemployed";
 
-        // Marital Status
         setColor(LIGHT_YELLOW);
         cout << "\n  Select marital status:" << endl;
         setColor(WHITE);
@@ -910,7 +823,6 @@ private:
         else if (marital == 3) currentApp.maritalStatus = "Divorced";
         else currentApp.maritalStatus = "Widowed";
 
-        // Gender
         setColor(LIGHT_YELLOW);
         cout << "\n  Select gender:" << endl;
         setColor(WHITE);
@@ -922,10 +834,8 @@ private:
         else if (gender == 2) currentApp.gender = "Female";
         else currentApp.gender = "Other";
 
-        // Number of Dependents
         currentApp.numberOfDependents = getValidNumberInput("\n  Number of dependents (0-20): ", 0, 20);
 
-        // Annual Income
         while (true) {
             string income = getValidInput("\n  Enter annual income in PKR (numbers only, no commas): ");
             if (income == "x") return false;
@@ -945,7 +855,6 @@ private:
             break;
         }
 
-        // Average Electricity Bill
         while (true) {
             string avgBill = getValidInput("  Monthly average electricity bill for last 12 months (PKR, no commas): ");
             if (avgBill == "x") return false;
@@ -959,7 +868,6 @@ private:
             break;
         }
 
-        // Current Electricity Bill
         while (true) {
             string currentBill = getValidInput("  Current electricity bill amount (PKR, no commas): ");
             if (currentBill == "x") return false;
@@ -973,7 +881,6 @@ private:
             break;
         }
 
-        // Existing Loans
         setColor(LIGHT_CYAN);
         cout << "\n  ========================================================" << endl;
         setColor(LIGHT_YELLOW);
@@ -1052,7 +959,6 @@ private:
             currentApp.loanInfo.loanCategory = "N/A";
         }
 
-        // Reference 1
         setColor(LIGHT_CYAN);
         cout << "\n  ========================================================" << endl;
         setColor(LIGHT_YELLOW);
@@ -1087,8 +993,6 @@ private:
             break;
         }
 
-
-        // CNIC issue date
         while (true) {
             string issueDate = getValidInput("\n  CNIC Issue Date (DD-MM-YYYY): ");
             if (issueDate == "x") return false;
@@ -1118,7 +1022,6 @@ private:
             break;
         }
 
-        //Email Address 
         while (true) {
             string email = getValidInput("\n  Email Address : ");
             if (email == "x") return false;
@@ -1135,7 +1038,6 @@ private:
             break;
         }
 
-        // Reference 2
         setColor(LIGHT_CYAN);
         cout << "\n  ========================================================" << endl;
         setColor(LIGHT_YELLOW);
@@ -1170,7 +1072,6 @@ private:
             break;
         }
 
-       
         while (true) {
             string issueDate = getValidInput("\n  CNIC Issue Date (DD-MM-YYYY): ");
             if (issueDate == "x") return false;
@@ -1200,7 +1101,6 @@ private:
             break;
         }
 
-        //Email Address 
         while (true) {
             string email = getValidInput("\n  Email Address: ");
             if (email == "x") return false;
@@ -1217,9 +1117,6 @@ private:
             break;
         }
 
-       
-
-        // Document Upload
         setColor(LIGHT_CYAN);
         cout << "\n  ========================================================" << endl;
         setColor(LIGHT_YELLOW);
@@ -1229,7 +1126,6 @@ private:
         setColor(WHITE);
         cout << "\n  Images will be saved in ./data/" << currentApp.applicationId << "/" << endl;
 
-        // Create directory
         string dataDir = "./data/" + currentApp.applicationId;
         _mkdir("./data");
         _mkdir(dataDir.c_str());
@@ -1259,7 +1155,6 @@ private:
         setColor(BRIGHT_WHITE);
         cin.get();
 
-        // Set initial status
         currentApp.status = "Pending";
 
         return true;
@@ -1338,6 +1233,186 @@ private:
         cout << "    CNIC Back: " << currentApp.cnicBackPath << endl;
         cout << "    Electricity Bill: " << currentApp.electricityBillPath << endl;
         cout << "    Salary Slip: " << currentApp.salarySlipPath << endl;
+    }
+
+    int displayCarLoanOptions() {
+        setColor(LIGHT_CYAN);
+        cout << "\n  ========================================================" << endl;
+        setColor(LIGHT_YELLOW);
+        cout << "                    CAR LOAN OPTIONS" << endl;
+        setColor(LIGHT_CYAN);
+        cout << "  ========================================================" << endl;
+        setColor(WHITE);
+
+        for (int i = 0; i < carCount; i++) {
+            setColor(LIGHT_YELLOW);
+            cout << "\n  Option " << (i + 1) << ":" << endl;
+            setColor(LIGHT_GREEN);
+            cout << "    Make: ";
+            setColor(BRIGHT_WHITE);
+            cout << carLoanOptions[i].make << endl;
+            setColor(LIGHT_GREEN);
+            cout << "    Model: ";
+            setColor(BRIGHT_WHITE);
+            cout << carLoanOptions[i].model << endl;
+            setColor(LIGHT_GREEN);
+            cout << "    Engine: ";
+            setColor(BRIGHT_WHITE);
+            cout << carLoanOptions[i].engine << " CC" << endl;
+            setColor(LIGHT_GREEN);
+            cout << "    Condition: ";
+            setColor(BRIGHT_WHITE);
+            cout << (carLoanOptions[i].used == "Yes" ? "Used" : "New") << endl;
+            setColor(LIGHT_GREEN);
+            cout << "    Year: ";
+            setColor(BRIGHT_WHITE);
+            cout << carLoanOptions[i].year << endl;
+            
+            double price = stringToDouble(removeCommas(carLoanOptions[i].price));
+            double downPayment = stringToDouble(removeCommas(carLoanOptions[i].downPayment));
+            
+            setColor(LIGHT_GREEN);
+            cout << "    Price: ";
+            setColor(LIGHT_CYAN);
+            cout << "Rs. " << formatNumber(price) << endl;
+            setColor(LIGHT_GREEN);
+            cout << "    Down Payment: ";
+            setColor(LIGHT_CYAN);
+            cout << "Rs. " << formatNumber(downPayment) << endl;
+            setColor(LIGHT_GREEN);
+            cout << "    Installments: ";
+            setColor(BRIGHT_WHITE);
+            cout << carLoanOptions[i].installments << " months" << endl;
+            setColor(LIGHT_BLUE);
+            cout << "  --------------------------------------------------------" << endl;
+            setColor(WHITE);
+        }
+
+        return carCount;
+    }
+
+    int displayBikeLoanOptions() {
+        setColor(LIGHT_CYAN);
+        cout << "\n  ========================================================" << endl;
+        setColor(LIGHT_YELLOW);
+        cout << "                    BIKE LOAN OPTIONS" << endl;
+        setColor(LIGHT_CYAN);
+        cout << "  ========================================================" << endl;
+        setColor(WHITE);
+
+        for (int i = 0; i < bikeCount; i++) {
+            setColor(LIGHT_YELLOW);
+            cout << "\n  Option " << (i + 1) << ":" << endl;
+            setColor(LIGHT_GREEN);
+            cout << "    Make: ";
+            setColor(BRIGHT_WHITE);
+            cout << bikeLoanOptions[i].make << endl;
+            setColor(LIGHT_GREEN);
+            cout << "    Model: ";
+            setColor(BRIGHT_WHITE);
+            cout << bikeLoanOptions[i].model << endl;
+            setColor(LIGHT_GREEN);
+            cout << "    Engine: ";
+            setColor(BRIGHT_WHITE);
+            cout << bikeLoanOptions[i].engine << " CC" << endl;
+            setColor(LIGHT_GREEN);
+            cout << "    Condition: ";
+            setColor(BRIGHT_WHITE);
+            cout << (bikeLoanOptions[i].used == "Yes" ? "Used" : "New") << endl;
+            setColor(LIGHT_GREEN);
+            cout << "    Year: ";
+            setColor(BRIGHT_WHITE);
+            cout << bikeLoanOptions[i].year << endl;
+            
+            double price = stringToDouble(removeCommas(bikeLoanOptions[i].price));
+            double downPayment = stringToDouble(removeCommas(bikeLoanOptions[i].downPayment));
+            
+            setColor(LIGHT_GREEN);
+            cout << "    Price: ";
+            setColor(LIGHT_CYAN);
+            cout << "Rs. " << formatNumber(price) << endl;
+            setColor(LIGHT_GREEN);
+            cout << "    Down Payment: ";
+            setColor(LIGHT_CYAN);
+            cout << "Rs. " << formatNumber(downPayment) << endl;
+            setColor(LIGHT_GREEN);
+            cout << "    Installments: ";
+            setColor(BRIGHT_WHITE);
+            cout << bikeLoanOptions[i].installments << " months" << endl;
+            setColor(LIGHT_BLUE);
+            cout << "  --------------------------------------------------------" << endl;
+            setColor(WHITE);
+        }
+
+        return bikeCount;
+    }
+
+    void handleCarLoanSelection() {
+        if (carCount == 0) {
+            setColor(LIGHT_RED);
+            cout << "\n  No car loan options available." << endl;
+            setColor(WHITE);
+            return;
+        }
+
+        int displayedCount = displayCarLoanOptions();
+
+        if (displayedCount == 0) return;
+
+        int optionSel = getValidNumberInput("\n  Select car loan option (1-" + intToString(displayedCount) + "): ", 1, displayedCount);
+
+        CarLoanOption selectedLoan = carLoanOptions[optionSel - 1];
+
+        double price = stringToDouble(removeCommas(selectedLoan.price));
+        double downPayment = stringToDouble(removeCommas(selectedLoan.downPayment));
+        double loanAmount = price - downPayment;
+        int installments = stringToInt(selectedLoan.installments);
+
+        currentApp.selectedLoanType = "Car";
+        currentApp.selectedLoanCategory = selectedLoan.make + " " + selectedLoan.model;
+        currentApp.loanAmount = loanAmount;
+        currentApp.installmentMonths = installments;
+
+        setColor(LIGHT_GREEN);
+        cout << "\n  Selected Car: " << selectedLoan.make << " " << selectedLoan.model << endl;
+        cout << "  Loan amount: Rs. " << formatNumber(loanAmount) << endl;
+        cout << "  Installments: " << installments << " months" << endl;
+        cout << "  Monthly payment: Rs. " << formatNumber(loanAmount / installments) << endl;
+        setColor(WHITE);
+    }
+
+    void handleBikeLoanSelection() {
+        if (bikeCount == 0) {
+            setColor(LIGHT_RED);
+            cout << "\n  No bike loan options available." << endl;
+            setColor(WHITE);
+            return;
+        }
+
+        int displayedCount = displayBikeLoanOptions();
+
+        if (displayedCount == 0) return;
+
+        int optionSel = getValidNumberInput("\n  Select bike loan option (1-" + intToString(displayedCount) + "): ", 1, displayedCount);
+
+        BikeLoanOption selectedLoan = bikeLoanOptions[optionSel - 1];
+
+        double price = stringToDouble(removeCommas(selectedLoan.price));
+        double downPayment = stringToDouble(removeCommas(selectedLoan.downPayment));
+        double loanAmount = price - downPayment;
+        int installments = stringToInt(selectedLoan.installments);
+
+        currentApp.selectedLoanType = "Bike";
+        currentApp.selectedLoanCategory = selectedLoan.make + " " + selectedLoan.model;
+        currentApp.loanAmount = loanAmount;
+        currentApp.installmentMonths = installments;
+
+        setColor(LIGHT_GREEN);
+        cout << "\n  Selected Bike: " << selectedLoan.make << " " << selectedLoan.model << endl;
+        cout << "  Loan amount: Rs. " << formatNumber(loanAmount) << endl;
+        cout << "  Installments: " << installments << " months" << endl;
+        cout << "  Monthly payment: Rs. " << formatNumber(loanAmount / installments) << endl;
+        setColor(WHITE);
     }
 
     bool saveApplicationToFile() {
@@ -1609,7 +1684,6 @@ private:
 
         int optionSel = getValidNumberInput("\n  Select loan option (1-" + intToString(displayedCount) + "): ", 1, displayedCount);
 
-        // Find selected loan
         int currentOption = 0;
         LoanOption selectedLoan;
         for (int i = 0; i < count; i++) {
@@ -1651,11 +1725,11 @@ public:
 
         carCapacity = 10;
         carCount = 0;
-        carLoanOptions = new LoanOption[carCapacity];
+        carLoanOptions = new CarLoanOption[carCapacity];
 
         bikeCapacity = 10;
         bikeCount = 0;
-        bikeLoanOptions = new LoanOption[bikeCapacity];
+        bikeLoanOptions = new BikeLoanOption[bikeCapacity];
 
         defaultResponse = "";
         chatbotName = "LOAN-BUDDY";
@@ -1744,11 +1818,85 @@ public:
     }
 
     bool loadCarLoanData(const string& filename) {
-        return loadLoanData(filename, carLoanOptions, carCount, carCapacity);
+        ifstream file(filename);
+        if (!file.is_open()) {
+            return false;
+        }
+
+        string line;
+        bool firstLine = true;
+
+        while (getline(file, line)) {
+            if (firstLine) {
+                firstLine = false;
+                continue;
+            }
+
+            if (line.empty() || trim(line).empty()) continue;
+
+            if (carCount >= carCapacity) {
+                resizeCarLoanArray(carLoanOptions, carCapacity);
+            }
+
+            string parts[10];
+            int partCount = 0;
+            splitString(line, '#', parts, partCount);
+
+            if (partCount >= 8) {
+                carLoanOptions[carCount].make = trim(parts[0]);
+                carLoanOptions[carCount].model = trim(parts[1]);
+                carLoanOptions[carCount].engine = trim(parts[2]);
+                carLoanOptions[carCount].used = trim(parts[3]);
+                carLoanOptions[carCount].year = trim(parts[4]);
+                carLoanOptions[carCount].installments = trim(parts[5]);
+                carLoanOptions[carCount].price = trim(parts[6]);
+                carLoanOptions[carCount].downPayment = trim(parts[7]);
+                carCount++;
+            }
+        }
+        file.close();
+        return true;
     }
 
     bool loadBikeLoanData(const string& filename) {
-        return loadLoanData(filename, bikeLoanOptions, bikeCount, bikeCapacity);
+        ifstream file(filename);
+        if (!file.is_open()) {
+            return false;
+        }
+
+        string line;
+        bool firstLine = true;
+
+        while (getline(file, line)) {
+            if (firstLine) {
+                firstLine = false;
+                continue;
+            }
+
+            if (line.empty() || trim(line).empty()) continue;
+
+            if (bikeCount >= bikeCapacity) {
+                resizeBikeLoanArray(bikeLoanOptions, bikeCapacity);
+            }
+
+            string parts[10];
+            int partCount = 0;
+            splitString(line, '#', parts, partCount);
+
+            if (partCount >= 8) {
+                bikeLoanOptions[bikeCount].make = trim(parts[0]);
+                bikeLoanOptions[bikeCount].model = trim(parts[1]);
+                bikeLoanOptions[bikeCount].engine = trim(parts[2]);
+                bikeLoanOptions[bikeCount].used = trim(parts[3]);
+                bikeLoanOptions[bikeCount].year = trim(parts[4]);
+                bikeLoanOptions[bikeCount].installments = trim(parts[5]);
+                bikeLoanOptions[bikeCount].price = trim(parts[6]);
+                bikeLoanOptions[bikeCount].downPayment = trim(parts[7]);
+                bikeCount++;
+            }
+        }
+        file.close();
+        return true;
     }
 
     string getResponse(const string& input) {
@@ -1791,7 +1939,6 @@ public:
                 continue;
             }
 
-            // Check application status
             if (lowerInput == "check status" || lowerInput == "status") {
                 checkApplicationStatus();
                 continue;
@@ -1831,27 +1978,12 @@ public:
                     handleLoanSelection(homeLoanOptions, homeCount, "Home");
                 }
                 else if (lowerInput == "c") {
-                    if (carCount > 0) {
-                        handleLoanSelection(carLoanOptions, carCount, "Car");
-                    }
-                    else {
-                        setColor(LIGHT_YELLOW);
-                        cout << "(Car loans coming soon)" << endl;
-                        setColor(WHITE);
-                    }
+                    handleCarLoanSelection();
                 }
                 else if (lowerInput == "e" || lowerInput == "b") {
-                    if (bikeCount > 0) {
-                        handleLoanSelection(bikeLoanOptions, bikeCount, "Bike");
-                    }
-                    else {
-                        setColor(LIGHT_YELLOW);
-                        cout << "(Bike loans coming soon)" << endl;
-                        setColor(WHITE);
-                    }
+                    handleBikeLoanSelection();
                 }
 
-                // Show summary and confirm
                 displayApplicationSummary();
 
                 setColor(LIGHT_MAGENTA);
@@ -1869,7 +2001,6 @@ public:
                         cout << "  ========================================================" << endl;
                         setColor(WHITE);
 
-                        // Simulate approval for demo
                         setColor(LIGHT_YELLOW);
                         cout << "\n  For approved applications, would you like to see" << endl;
                         cout << "  monthly payment plan with actual months? (Y/N): ";
